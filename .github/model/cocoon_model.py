@@ -24,7 +24,7 @@ auto_submit  (auto_submit/lib/validations/*, service/validation_service.dart)
   not, so after a merge into release-* the model dispatches the release workflow on that branch.
 Deviation recorded in the receipt: approving_reviews comes from config (fixture: 1; production: 2).
 """
-import json, os, sys, time, urllib.error, urllib.request
+import json, os, sys, time, urllib.error, urllib.parse, urllib.request
 
 GUARD = 'Awaiting CICD label'
 PRESUBMIT = 'Linux presubmit (LUCI model)'
@@ -66,7 +66,7 @@ def labels_of(pr):
 
 
 def check_runs(api, sha, name=None):
-    q = f'/commits/{sha}/check-runs?per_page=100' + (f'&check_name={name}' if name else '')
+    q = f'/commits/{sha}/check-runs?per_page=100' + (f'&check_name={urllib.parse.quote(name, safe="")}' if name else '')
     st, d = api.req('GET', q)
     return (d or {}).get('check_runs', []) if st == 200 else []
 
